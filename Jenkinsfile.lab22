@@ -1,0 +1,34 @@
+@Library("ivolve-shared-lib") _
+
+pipeline {
+    agent { label "docker-agent" }
+
+    environment {
+        IMAGE = "hazemmohamed4/ivolve-app"
+        TAG   = "${BUILD_NUMBER}"
+    }
+
+    stages {
+        stage("Build App") {
+            steps { BuildApp() }
+        }
+
+        stage("Build Image") {
+            steps { BuildImage(IMAGE, TAG) }
+        }
+
+        stage("Deploy to Kubernetes") {
+            steps { DeployOnK8s(IMAGE, TAG) }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished with status: ${currentBuild.currentResult} on ${env.NODE_NAME}"
+            sh "docker logout || true"
+            deleteDir()
+        }
+        success { echo "Success: ${IMAGE}:${TAG} deployed to the ivolve namespace" }
+        failure { echo "Failure: check the console output of the failed stage" }
+    }
+}
