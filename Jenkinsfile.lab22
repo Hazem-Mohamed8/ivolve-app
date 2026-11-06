@@ -3,9 +3,16 @@
 pipeline {
     agent { label "docker-agent" }
 
+    options {
+        timeout(time: 20, unit: "MINUTES")
+    }
+
     environment {
         IMAGE = "hazemmohamed4/ivolve-app"
         TAG   = "${BUILD_NUMBER}"
+        // use the vulnerability DB already cached on the agent, no download during the build
+        TRIVY_CACHE_DIR      = "/root/.cache/trivy"
+        TRIVY_SKIP_DB_UPDATE = "true"
     }
 
     stages {
