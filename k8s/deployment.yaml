@@ -55,7 +55,7 @@ spec:
                 FLUSH PRIVILEGES;"
       containers:
         - name: app
-          image: hazemmohamed4/ivolve-app:v1
+          image: hazemmohamed4/ivolve-app:11
           ports:
             - containerPort: 3000
           envFrom:
